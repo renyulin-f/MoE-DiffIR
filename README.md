@@ -4,7 +4,8 @@
 
 # MoE-DiffIR: Task-customized Diffusion Priors for Universal Compressed Image Restoration
 
-[![arXiv](https://img.shields.io/badge/arXiv-Paper-<COLOR>.svg)](https://arxiv.org/abs/2407.10833)  [![Project](https://img.shields.io/badge/Project-Page-blue.svg)](https://renyulin-f.github.io/MoE-DiffIR.github.io/) 
+[![arXiv](https://img.shields.io/badge/arXiv-Paper-<COLOR>.svg)](https://arxiv.org/abs/2407.10833)  [![Project](https://img.shields.io/badge/Project-Page-blue.svg)](https://renyulin-f.github.io/MoE-DiffIR.github.io/)  
+![visitors](https://visitor-badge.laobi.icu/badge?page_id=renyulin-f/MoE-DiffIR)
 
 This repository is the official PyTorch implementation of MoE-DiffIR (ECCV 2024).
 
