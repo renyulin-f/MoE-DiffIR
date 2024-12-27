@@ -1,0 +1,209 @@
+sf: 4
+model:
+  base_learning_rate: 1.0e-04    #最基本的学习率设置
+  target: ldm.models.diffusion.ddpm.LatentDiffusionSRTextWT  #目标class
+  params: #相关的参数设置
+    # parameterization: "v"
+    linear_start: 0.00085 #扩散模型开始点
+    linear_end: 0.0120  #扩散模型的变量结束
+    num_timesteps_cond: 1
+    log_every_t: 200  ##每200更新log
+    timesteps: 1000   #训练的T=1000
+    first_stage_key: image 
+    cond_stage_key: caption
+    image_size: 256
+    channels: 4
+    cond_stage_trainable: False   # Note: different from the one we trained before
+    # conditioning_key: concat
+    conditioning_key: crossattn
+    monitor: val/loss_simple_ema
+    scale_factor: 0.18215
+    use_ema: False
+    # for training only
+    # ckpt_path: /data2/renyulin/Prompt_StableSR2/logs/2023-08-29-14-06-42_stable_new/checkpoints/epoch=000006.ckpt
+    # ckpt_path: /data2/renyulin/Prompt_StableSR2/logs/2023-09-07-19-48-54_new/checkpoints/last.ckpt
+    # ckpt_path: /data2/renyulin/Prompt_StableSR2/logs/2023-08-29-17-09-28_latest/checkpoints/epoch=000021.ckpt
+    # ckpt_path:  /data2/renyulin/Prompt_StableSR2/v2-1_512-ema-pruned.ckpt
+    ckpt_path: /data1/renyulin/Prompt_Diffusion/logs/2023-11-02-20-17-45_test_for_real_dataset/checkpoints/last.ckpt
+    # ckpt_path: /data2/renyulin/Prompt_StableSR2/logs/2023-09-10-16-27-11_test/checkpoints/epoch=000098.ckpt
+    # ckpt_path: /data1/renyulin/Prompt_Diffusion/logs/2023-09-14-17-34-31_test_for_only_decoder/checkpoints/epoch=000057.ckpt
+    # ckpt_path: /data1/renyulin/Prompt_Diffusion/logs/2023-09-16-10-24-59_test_for_only_decoder/checkpoints/epoch=000001.ckpt
+    # ckpt_path: /data2/renyulin/Prompt_StableSR/logs/2023-09-08-16-45-19_test_new/checkpoints/epoch=000018.ckpt
+    unfrozen_diff: False
+    random_size: False
+    time_replace: 1000
+    use_usm: True
+    #P2 weighting, we do not use in final version
+    p2_gamma: ~
+    p2_k: ~
+    # ignore_keys: []
+
+    unet_config:
+      target: ldm.modules.diffusionmodules.openaimodel.UNetModelDualcondV2
+      params:
+        image_size: 32 # unused
+        in_channels: 4
+        out_channels: 4
+        model_channels: 320
+        attention_resolutions: [ 4, 2, 1 ]
+        num_res_blocks: 2
+        channel_mult: [ 1, 2, 4, 4 ]
+        num_head_channels: 64
+        use_spatial_transformer: True
+        use_linear_in_transformer: True
+        transformer_depth: 1
+        context_dim: 1024
+        use_checkpoint: False
+        legacy: False
+        semb_channels: 256
+
+    first_stage_config:   #这里主要是encoder
+      target: ldm.models.autoencoder.AutoencoderKL
+      params:
+        # for training only
+        # ckpt_path: /data2/renyulin/Prompt_StableSR2/logs/2023-09-10-16-27-11_test/checkpoints/epoch=000098.ckpt
+        # ckpt_path: /data1/renyulin/Prompt_Diffusion/logs/2023-09-14-17-34-31_test_for_only_decoder/checkpoints/epoch=000057.ckpt
+        # ckpt_path: /data1/renyulin/Prompt_Diffusion/logs/2023-09-16-10-24-59_test_for_only_decoder/checkpoints/epoch=000001.ckpt
+        # ckpt_path:  /data2/renyulin/Prompt_StableSR2/v2-1_512-ema-pruned.ckpt
+        ckpt_path: /data1/renyulin/Prompt_Diffusion/logs/2023-11-02-20-17-45_test_for_real_dataset/checkpoints/last.ckpt
+        # ckpt_path: /data2/renyulin/Prompt_StableSR2/logs/2023-09-07-19-48-54_new/checkpoints/last.ckpt
+        # ckpt_path: /data2/renyulin/Prompt_StableSR2/logs/2023-08-29-17-09-28_latest/checkpoints/epoch=000021.ckpt
+        # ckpt_path: /data2/renyulin/Prompt_StableSR2/logs/2023-08-29-14-06-42_stable_new/checkpoints/epoch=000006.ckpt
+        embed_dim: 4
+        monitor: val/rec_loss    #reconstruction loss
+        ddconfig:
+          double_z: true
+          z_channels: 4
+          resolution: 256
+          in_channels: 3
+          out_ch: 3
+          ch: 128
+          ch_mult:
+          - 1
+          - 2
+          - 4
+          - 4
+          num_res_blocks: 2
+          attn_resolutions: []
+          dropout: 0.0
+        lossconfig:
+          target: torch.nn.Identity
+
+    # cond_stage_config: #CLIP对于文本的编码
+    #   target: ldm.modules.encoders.modules.CLIP_Semantic_extractor2
+    #   params:
+    #     freeze: True
+    #     # layer: "penultimate"
+    cond_stage_config: #CLIP对于文本的编码
+      target: ldm.modules.encoders.modules.FrozenOpenCLIPEmbedder
+      params:
+        freeze: True
+        layer: "penultimate"
+
+    structcond_stage_config: #这个是条件（可训练的）
+      target: ldm.modules.diffusionmodules.openaimodel.EncoderUNetModelWT
+      params:
+        image_size: 96
+        in_channels: 8
+        model_channels: 256
+        out_channels: 256
+        num_res_blocks: 2
+        attention_resolutions: [ 4, 2, 1 ]
+        dropout: 0
+        channel_mult: [ 1, 1, 2, 2 ]
+        conv_resample: True
+        dims: 2
+        use_checkpoint: False
+        use_fp16: False
+        num_heads: 4
+        num_head_channels: -1
+        num_heads_upsample: -1
+        use_scale_shift_norm: False
+        resblock_updown: False
+        use_new_attention_order: False
+
+data:
+  target: main.DataModuleFromConfig
+  params:
+    batch_size: 1
+    num_workers: 1
+    train:
+      target: basicsr.data.dataset_utils.PromptTrainDataset
+      params:
+        queue_size: 120
+        key: 'train'
+        de_type: ['SR','deblur','derain','LOL']
+        # de_type: ['derain','denoise_15','denoise_25','denoise_50']
+        # de_type: ['denoise_15', 'derain']
+        SR_dir: '/data1/renyulin/datasets/RealSR/HR/'
+        derain_dir: '/data1/renyulin/datasets/Real-Rain/Training/real_world.zip/HQ_random/'
+        deblur_dir: '/data1/renyulin/datasets/GOPRO_Large/HQ/'
+        LOL_dir: '/data1/renyulin/datasets/LOLdataset/our485/high/'
+
+
+        data_file_dir: '/data1/renyulin/datasets'
+        # num_face: 10000
+        crop_size: 256
+        patch_size: 256
+        io_backend:
+          type: disk
+
+        gt_size: 256
+        use_hflip: False
+        use_rot: False
+     
+    # validation:
+    #   target: basicsr.data.dataset_utils.PromptTrainDataset
+    #   params:
+    #     key: 'validation'
+    #     denoise_dir: '/data2/renyulin/Prompt_StableSR/Validation/noisy/'
+    #     derain_dir: '/data2/renyulin/Prompt_StableSR/Validation/rainy/'
+    #     dehaze_dir: '/data2/renyulin/Prompt_StableSR/Validation/hazy/'
+    #     data_file_dir: '/data2/renyulin/Prompt_StableSR/Validation/'
+    #     # de_type: ['derain']
+    #     de_type: ['denoise_15', 'denoise_25', 'denoise_50', 'derain','dehaze']
+    #     # de_type: ['derain','denoise_15','denoise_25','denoise_50']
+    #     patch_size: 256
+    #     crop_size: 256
+    #     io_backend:
+    #       type: disk
+    #     gt_size: 256
+    #     use_hflip: false
+    #     use_rot: False
+
+# test_data:
+#   target: main.DataModuleFromConfig
+#   params:
+#     batch_size: 1
+#     num_workers: 0
+#     wrap: false
+#     test:
+#       target: basicsr.data.dataset_utils.PromptTrainDataset
+#       params:
+#         denoise_path: '/data2/renyulin/Prompt_StableSR/test/noisy'
+#         derainy_path: '/data2/renyulin/Prompt_StableSR/test/noisy'
+#         dehazy_path: '/data2/renyulin/Prompt_StableSR/test/noisy'
+#         crop_size: 256
+#         io_backend:
+#           type: disk
+#         gt_size: 256
+#         use_hflip: false
+#         use_rot: false
+
+lightning:
+  modelcheckpoint:
+    params:
+      every_n_train_steps: 10000
+  callbacks:
+    image_logger:
+      target: main.ImageLogger
+      params:
+        batch_frequency: 10000
+        max_images: 1
+        increase_log_steps: False  
+
+  trainer:
+    benchmark: True
+    max_steps: 1000000
+    accumulate_grad_batches: 2
+    gpus: '0'
