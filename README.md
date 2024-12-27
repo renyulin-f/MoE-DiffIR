@@ -22,10 +22,7 @@ This repository is the official PyTorch implementation of MoE-DiffIR (ECCV 2024)
 
 ### Prepare Datasets:
 We propose a comprehensive benchmark dataset for universal compressed image restoration (CIR), covering 21 types of degradations from 7 popular traditional and learned codecs.
-We propose a comprehensive benchmark dataset for universal compressed image restoration (CIR), covering 21 types of degradations from 7 popular traditional and learned codecs. Traditional and learned codecs include HIFIC:
-$$
-C_{SSIM}, \quad C_{PSNR}.
-$$。 Within each codec, we apply three levels of distortions:
+We propose a comprehensive benchmark dataset for universal compressed image restoration (CIR), covering 21 types of degradations from 7 popular traditional and learned codecs. Traditional and learned codecs include HIFIC, $$C_{SSIM}$$, $$C_{PSNR}$$. Within each codec, we apply three levels of distortions:
 - **JPEG**: QF=10,15,20
 - **VVC**: QP=37,42,47
 - **HEVC**: QP=37,42,47
