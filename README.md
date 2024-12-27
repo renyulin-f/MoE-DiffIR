@@ -22,14 +22,17 @@ This repository is the official PyTorch implementation of MoE-DiffIR (ECCV 2024)
 
 ### Prepare Datasets:
 We propose a comprehensive benchmark dataset for universal compressed image restoration (CIR), covering 21 types of degradations from 7 popular traditional and learned codecs.
-We propose a comprehensive benchmark dataset for universal compressed image restoration (CIR), covering 21 types of degradations from 7 popular traditional and learned codecs. Traditional codecs includes JPEG, VVC, HEVC, WEBP. Learned codecs includes HIFIC, \( C_{SSIM} \), \( C_{PSNR} \)。 Within each codec, we apply three levels of distortions:
+We propose a comprehensive benchmark dataset for universal compressed image restoration (CIR), covering 21 types of degradations from 7 popular traditional and learned codecs. Traditional and learned codecs include HIFIC:
+$$
+C_{SSIM}, \quad C_{PSNR}.
+$$。 Within each codec, we apply three levels of distortions:
 - **JPEG**: QF=10,15,20
 - **VVC**: QP=37,42,47
 - **HEVC**: QP=37,42,47
 - **WEBP**: QF=1,5,10
 - **HIFIC**: Mode='low', 'med', 'high'
-- \( C_{SSIM} \): Mode=1,2,3
-- \( C_{PSNR} \): Mode=1,3,3
+- $$C_{SSIM}$$: Mode=1,2,3
+- $$C_{PSNR}$$: Mode=1,3,3
 Our CIR dataset is based on DF2K, with the original DF2K images considered as the ground truth. All compression codecs are applied to these images. Here we release the [datalink](https://drive.google.com/drive/folders/1Kn8SjJWpHITHlg5kuL1Ur7Ml-WNJJ064) of CIR dataset including 'CIR_datasets' and 'CIR_Unseen_Tasks'. The 'CIR_Dataset' branch of this dataset is shown in the following figure. The dataset comprises training and testing sets. In the training set, "DF2K_HR" contains the ground truth (GT) images, while the other folders correspond to 21 types of low-quality (LQ) images resulting from various compression distortions. The five testing sets also include folders corresponding to the 21 types of compressed LQ images, as well as folders for the high-resolution (HR) images.
 
 ## Results
