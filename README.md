@@ -47,7 +47,7 @@ Inference code:
 ```
 bash test.sh
 ```
-Here you could download the klvae_ckpt from this link.
+Here you could download the klvae_ckpt from this [link](https://drive.google.com/drive/folders/1G6Hn9djg7_1-Qijgj619fMd262uXCrNu?usp=sharing).
 ## Results
 <p align="center">
   <img width="800" src="./Figs/Visual1.png">
