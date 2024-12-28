@@ -202,6 +202,7 @@ class IdentityFirstStage(torch.nn.Module):
 #         super().__init__()
 #         self.prompt_param=nn.Parameter(torch.rand(prompt_len,prompt_channel,prompt_size,prompt_size)-0.5,requires_grad=True)
 #         self.prompt_param=torch.nn.init.zeros_(self.prompt_param)
+
 #     def forward(self,x):
 #         p = self.prompt_param
 #         prompt = p
@@ -339,10 +340,6 @@ class Prompt(nn.Module):
         index = x.size(0) // B
         result = []
         clean_logits = self.f_gate[task_bh](x)  #(32768,256)
-        # for i in range(B):
-        #     clean_logits = self.f_gate[task_bh[i]](x[i*index:(i+1)*index,:]) #(1024,32)
-        #     result.append(clean_logits)
-        # clean_logits = torch.cat(result,dim=0)
         if self.noisy_gating:
             clean_logits, raw_noise_stddev = clean_logits.chunk(2, dim=-1)
             noise_stddev = F.softplus(raw_noise_stddev) + noise_epsilon
@@ -355,7 +352,6 @@ class Prompt(nn.Module):
             logits = clean_logits
         probs = torch.softmax(logits, dim=1) + 1e-5 #8192*8
         top_k_gates, top_k_indices = probs.topk(self.k, dim=1) # top_k_gates=(8192,4), top_k_indices=(2,0,1,5)
-        #batch_gates = (32768), batch_index =（32768）， expert_size=(8),  gates =(8192,8)  , index_sorted_experts=(32768)
         batch_gates, batch_index, expert_size, gates, index_sorted_experts = \
             self.compute_gating(self.k, probs, top_k_gates, top_k_indices) #4,(8192,4),(8192,4),(2,0,1,5)
         expert_inputs = x[batch_index] #(32768,256)     batch*prompt_len*chossed_expert_num
@@ -439,10 +435,6 @@ class AutoencoderKLResi(pl.LightningModule):
             for name, param in self.named_parameters():
                 if 'fusion_layer' in name:
                     param.requires_grad = True
-                # elif 'encoder' in name:
-                #     param.requires_grad = True
-                # elif 'quant_conv' in name and 'post_quant_conv' not in name:
-                #     param.requires_grad = True
                 elif 'loss.discriminator' in name:
                     param.requires_grad = True
                 elif 'Prompt' in name:
@@ -463,20 +455,6 @@ class AutoencoderKLResi(pl.LightningModule):
             if not params.requires_grad:
                 untrainable_list.append(name)
         print(untrainable_list)
-        # untrainable_list = list(set(trainable_list).difference(set(missing_list)))
-        # print('>>>>>>>>>>>>>>>>>untrainable_list>>>>>>>>>>>>>>>>>>>')
-        # print(untrainable_list)
-
-    # def init_from_ckpt(self, path, ignore_keys=list()):
-    #     sd = torch.load(path, map_location="cpu")["state_dict"]
-    #     keys = list(sd.keys())
-    #     for k in keys:
-    #         for ik in ignore_keys:
-    #             if k.startswith(ik):
-    #                 print("Deleting key {} from state_dict.".format(k))
-    #                 del sd[k]
-    #     self.load_state_dict(sd, strict=False)
-    #     print(f"Restored from {path}")
 
     def init_from_ckpt(self, path, ignore_keys=list(), only_model=False):
         sd = torch.load(path, map_location="cpu")

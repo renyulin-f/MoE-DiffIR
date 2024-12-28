@@ -838,9 +838,9 @@ class PromptLatentDiffusion(DDPM): #SRTextWT
         except:
             self.num_downs = 0
         self.scale_factor = scale_factor
-        self.instantiate_first_stage(first_stage_config) #构建第一部分encoder
-        self.instantiate_cond_stage(cond_stage_config)#构建conditional stage
-        self.instantiate_moe_prompt_stage(moe_prompt_module_config)#构建整个模型的结构阶段
+        self.instantiate_first_stage(first_stage_config) # Construct the encoder; KL-VAE
+        self.instantiate_cond_stage(cond_stage_config) # V2T-Adpater or Empty string
+        self.instantiate_moe_prompt_stage(moe_prompt_module_config) # MoE-Prompt Module
         embed_dim = 256
         
         # Here Load the pretrained enhancer which is trained a few epoches. 
@@ -919,7 +919,7 @@ class PromptLatentDiffusion(DDPM): #SRTextWT
         if self.shorten_cond_schedule:
             self.make_cond_schedule()
 
-    def instantiate_first_stage(self, config):  #这里是实例化第一阶段的模型
+    def instantiate_first_stage(self, config):  
         model = instantiate_from_config(config)
         self.first_stage_model = model.eval()
         for param in self.first_stage_model.parameters():
@@ -957,7 +957,6 @@ class PromptLatentDiffusion(DDPM): #SRTextWT
         self.structcond_stage_model = model
         for name, param in self.cond_stage_model.named_parameters():
             param.requires_grad = False
-        # self.structcond_stage_model.eval() # 是否需要训练enhancer
         self.structcond_stage_model.train()
 
     def get_first_stage_encoding(self, encoder_posterior):
@@ -1056,7 +1055,7 @@ class PromptLatentDiffusion(DDPM): #SRTextWT
         y = self.gt.to(self.device) # gt
         # Through latent VAE codec: 
         encoder_posterior = self.encode_first_stage(x)
-        z = self.get_first_stage_encoding(encoder_posterior).detach() #得到latent变量lq_z
+        z = self.get_first_stage_encoding(encoder_posterior).detach() 
         encoder_posterior_y = self.encode_first_stage(y)
         z_gt = self.get_first_stage_encoding(encoder_posterior_y).detach()
         while len(text_cond) < z.size(0):
@@ -1110,7 +1109,7 @@ class PromptLatentDiffusion(DDPM): #SRTextWT
         x = x.to(self.device) #lq
         y = y.to(self.device) #gt
         encoder_posterior = self.encode_first_stage(x)
-        z = self.get_first_stage_encoding(encoder_posterior).detach() #得到latent变量lq_z
+        z = self.get_first_stage_encoding(encoder_posterior).detach() #obatin latent variable lq_z
         encoder_posterior_y = self.encode_first_stage(y)
         z_gt = self.get_first_stage_encoding(encoder_posterior_y).detach()
         xc = None

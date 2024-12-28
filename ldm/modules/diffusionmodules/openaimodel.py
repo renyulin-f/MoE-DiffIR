@@ -308,12 +308,11 @@ class MoE_Prompt(nn.Module):
             logits, _ = clean_logits.chunk(2, dim=-1)
         else:
             logits = clean_logits
-        probs = torch.softmax(logits, dim=1) + 1e-5 #8192*8
-        top_k_gates, top_k_indices = probs.topk(self.k, dim=1) # top_k_gates=(8192,4), top_k_indices=(2,0,1,5)
-        #batch_gates = (32768), batch_index =（32768）， expert_size=(8),  gates =(8192,8)  , index_sorted_experts=(32768)
+        probs = torch.softmax(logits, dim=1) + 1e-5
+        top_k_gates, top_k_indices = probs.topk(self.k, dim=1) 
         batch_gates, batch_index, expert_size, gates, index_sorted_experts = \
-            self.compute_gating(self.k, probs, top_k_gates, top_k_indices) #4,(8192,4),(8192,4),(2,0,1,5)
-        expert_inputs = x[batch_index] #(32768,256)     batch*prompt_len*chossed_expert_num
+            self.compute_gating(self.k, probs, top_k_gates, top_k_indices) 
+        expert_inputs = x[batch_index] #batch*prompt_len*chossed_expert_num
         num_linears = self.prompt_param.size(0)
         self.batch_index = batch_index
         expert_size_list = expert_size.tolist()
@@ -326,13 +325,13 @@ class MoE_Prompt(nn.Module):
         return expert_outputs
     
     def forward(self,x,task_id):
-        bsz, length, emb_size = x.size() #8,256,1024    (1,1024,256)
-        x2 = x.reshape(-1, emb_size)  #(1024,256)
+        bsz, length, emb_size = x.size() 
+        x2 = x.reshape(-1, emb_size)  
         expert_outputs = self.top_k_gating(x2,task_id,bsz)
         zeros = torch.zeros((bsz * length, emb_size), 
-            dtype=expert_outputs.dtype, device=expert_outputs.device)  #(8192,256)
-        y = zeros.index_add(0, self.batch_index, expert_outputs) #(8192,256)
-        y = y.view(bsz, length, emb_size) #(8,1024,256)
+            dtype=expert_outputs.dtype, device=expert_outputs.device) 
+        y = zeros.index_add(0, self.batch_index, expert_outputs) 
+        y = y.view(bsz, length, emb_size)
       
         return y
 
@@ -351,9 +350,7 @@ class Prompt_routing(nn.Module):
         num_prompts = prompt_len  #8
         input_size = 256
         self.k = top_k
-        self.f_gate = nn.ModuleList([nn.Sequential(               #8个linear层， f_gate[i] = Linear(256,16)
-                                        # nn.Linear(input_size, input_size),
-                                        # gating_activation,
+        self.f_gate = nn.ModuleList([nn.Sequential(               #8 linear layer， f_gate[i] = Linear(256,16)
                                         nn.Linear(input_size,
                                                   2 * num_prompts,
                                                   bias=False)
@@ -408,7 +405,6 @@ class Prompt_routing(nn.Module):
             logits = clean_logits
         probs = torch.softmax(logits, dim=1) + 1e-5 #8192*8
         top_k_gates, top_k_indices = probs.topk(self.k, dim=1) # top_k_gates=(8192,4), top_k_indices=(2,0,1,5)
-        #batch_gates = (32768), batch_index =（32768）， expert_size=(8),  gates =(8192,8)  , index_sorted_experts=(32768)
         batch_gates, batch_index, expert_size, gates, index_sorted_experts = \
             self.compute_gating(self.k, probs, top_k_gates, top_k_indices) #4,(8192,4),(8192,4),(2,0,1,5)
         
@@ -653,7 +649,7 @@ class MOETaskTransformer(nn.Module):
         result_list.append(out2)
         x = self.downsample1(out1) #(1,256,16,16)
         
-    #第二层
+    # Second Layer
         x = self.patch_embed2(x)
         for blk in self.blocks2:
             x = blk(x, t) #t = task_index
@@ -676,7 +672,7 @@ class MOETaskTransformer(nn.Module):
         result_list.append(out2)
         x = self.downsample2(out1)
         
-    # 第三层
+    # Third Layer
         x = self.patch_embed3(x)
         for blk in self.blocks3:
             x = blk(x, t) #t = task_index
@@ -698,7 +694,7 @@ class MOETaskTransformer(nn.Module):
         result_list.append(out2)
         x = self.downsample3(out1)
         
-    #第四层
+    #Fourth Layer
         x = self.patch_embed4(x)
         for blk in self.blocks4:
             x = blk(x, t) #t = task_index
@@ -1785,7 +1781,7 @@ class UNetModelDualcondV2(nn.Module):
         input_block_chans = [model_channels] #[320]
         ch = model_channels
         ds = 1
-        for level, mult in enumerate(channel_mult):  #遍历 (index,channel_mult[index])
+        for level, mult in enumerate(channel_mult):  #(index,channel_mult[index])
             for nr in range(self.num_res_blocks[level]):
                 layers = [
                     ResBlock(
