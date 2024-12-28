@@ -32,6 +32,22 @@ We propose a comprehensive benchmark dataset for universal compressed image rest
 - $$C_{PSNR}$$: Mode=1,3,3
 Our CIR dataset is based on DF2K, with the original DF2K images considered as the ground truth. All compression codecs are applied to these images. Here we release the [datalink](https://drive.google.com/drive/folders/1Kn8SjJWpHITHlg5kuL1Ur7Ml-WNJJ064) of CIR dataset including 'CIR_datasets' and 'CIR_Unseen_Tasks'. The 'CIR_Dataset' branch of this dataset is shown in the following figure. The dataset comprises training and testing sets. In the training set, "DF2K_HR" contains the ground truth (GT) images, while the other folders correspond to 21 types of low-quality (LQ) images resulting from various compression distortions. The five testing sets also include folders corresponding to the 21 types of compressed LQ images, as well as folders for the high-resolution (HR) images.
 
+### Prepare Environment:
+- Python 3.9
+- PyTorch 1.12.1 + cu113
+Install other requiremnets:
+```
+pip install -r requirements.txt
+```
+
+### Inference code:
+Here we release three checkpoints: (i) Only using MoE-Prompt (ii) Use Both MoE-Prompt and V2T Adapter (iii) Use MoE-Prompt, V2T Adapter and DA-CLIP degradation Prior. 
+You can find three weights in this link.
+Inference code: 
+```
+bash test.sh
+```
+Here you could download the klvae_ckpt from this link.
 ## Results
 <p align="center">
   <img width="800" src="./Figs/Visual1.png">
