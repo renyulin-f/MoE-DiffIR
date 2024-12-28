@@ -1,0 +1,150 @@
+model:
+  base_learning_rate: 1.0e-04    #Basic Learning Rate
+  target: ldm.models.diffusion.ddpm.PromptLatentDiffusion  # Target Class: MoE-DiffIR
+  params: # Parameters Settings
+    # parameterization: "v" # default setting is "eps"
+    linear_start: 0.00085 # Start Point of Diffusion Model
+    linear_end: 0.0120  # End Point of Diffusion Model
+    num_timesteps_cond: 1
+    log_every_t: 200  
+    timesteps: 1000
+    first_stage_key: image 
+    cond_stage_key: caption
+    image_size: 256 # Default 256, could change to 512 according to your GPU memory.
+    channels: 4
+    conditioning_key: crossattn
+    monitor: val/loss_simple_ema
+    scale_factor: 0.18215
+    use_ema: False
+
+    # for training only
+    ckpt_path: your_path/v2-1_512-ema-pruned.ckpt
+    unfrozen_diff: False
+    random_size: False
+    time_replace: 1000
+    use_usm: True
+    p2_gamma: ~
+    p2_k: ~
+
+    unet_config:
+      target: ldm.modules.diffusionmodules.openaimodel.UNetModelDualcondV2
+      params:
+        image_size: 32 # unused
+        in_channels: 4
+        out_channels: 4
+        model_channels: 320
+        attention_resolutions: [ 4, 2, 1 ]
+        num_res_blocks: 2
+        channel_mult: [ 1, 2, 4, 4 ]
+        num_head_channels: 64
+        use_spatial_transformer: True
+        use_linear_in_transformer: True
+        transformer_depth: 1
+        context_dim: 1024
+        use_checkpoint: False
+        legacy: False
+        semb_channels: 256
+
+    first_stage_config:    # KL-VAE encoder.
+      target: ldm.models.autoencoder.AutoencoderKL
+      params:
+        # for training only
+        ckpt_path: v2-1_512-ema-pruned.ckpt
+        embed_dim: 4
+        monitor: val/rec_loss    #reconstruction loss
+        ddconfig:
+          double_z: true
+          z_channels: 4
+          resolution: 256 # Default 256, could change to 512 according to your GPU memory.
+          in_channels: 3
+          out_ch: 3
+          ch: 128
+          ch_mult:
+          - 1
+          - 2
+          - 4
+          - 4
+          num_res_blocks: 2
+          attn_resolutions: []
+          dropout: 0.0
+        lossconfig:
+          target: torch.nn.Identity
+    
+
+
+    cond_stage_config: # Visual2Text Adapter
+      target: ldm.modules.encoders.modules.CLIP_Semantic_extractor2
+      params:
+        freeze: True
+
+    moe_prompt_module_config:  # MoE-Prompt Module
+      target: ldm.modules.diffusionmodules.openaimodel.MOETaskTransformer
+      params:
+        img_types: ['JPEG_10','JPEG_15','JPEG_20','VVC_47','VVC_42','VVC_37','HEVC_47','HEVC_42','HEVC_37','WEBP_1','WEBP_5','WEBP_10','PSNR_1','PSNR_2','PSNR_3','SSIM_1','SSIM_2','SSIM_3','HIFI_1','HIFI_2','HIFI_3']
+        use_moe_prompt: True
+        use_weighted_prompt: False
+        use_DACLIP_prior: True
+        top_k: 3
+        use_single_prompt: False
+        num_prompt_experts: 7
+
+data:
+  target: main.DataModuleFromConfig
+  params:
+    batch_size: 2
+    num_workers: 8
+    train:
+      target: basicsr.data.CIR_dataset.CompressionTrainDataset
+      params: 
+        queue_size: 120
+        key: 'train'
+        de_type: ['JPEG_10','JPEG_15','JPEG_20','VVC_47','VVC_42','VVC_37','HEVC_47','HEVC_42','HEVC_37','WEBP_1','WEBP_5','WEBP_10','PSNR_1','PSNR_2','PSNR_3','SSIM_1','SSIM_2','SSIM_3','HIFI_1','HIFI_2','HIFI_3']
+        JPEG_10: 'Your_Path/JPEG_10/'
+        JPEG_15: 'Your_Path/JPEG_15/'
+        JPEG_20: Your_Path/JPEG_20/'
+        VVC_47: 'Your_Path/VTM_47/'
+        VVC_42: 'Your_Path/VTM_42/'
+        VVC_37: 'Your_Path/VTM_37/'
+        HEVC_47: 'Your_Path/HM_47/'
+        HEVC_42: 'Your_Path/HM_42/'
+        HEVC_37: 'Your_Path/HM_37/'
+        WEBP_1: 'Your_Path/webp_1/'
+        WEBP_5: 'Your_Path/webp_5/'
+        WEBP_10: 'Your_Path/webp_10/'
+        PSNR_1: 'Your_Path/PSNR_1/'
+        PSNR_2: 'Your_Path/PSNR_2/'
+        PSNR_3: 'Your_Path/PSNR_3/'
+        SSIM_1: 'Your_Path/SSIM_1/'
+        SSIM_2: 'Your_Path/SSIM_2/'
+        SSIM_3: 'Your_Path/SSIM_3/'
+        HIFI_1: 'Your_Path/HIFIC_1/'
+        HIFI_2: 'Your_Path/HIFIC_2/'
+        HIFI_3: 'Your_Path/HIFIC_3/'
+
+        # num_face: 10000
+        crop_size: 256 # Default 256, could change to 512 according to your GPU memory.
+        patch_size: 256 # Default 256, could change to 512 according to your GPU memory.
+        io_backend:
+          type: disk
+        gt_size: 256
+        use_hflip: False
+        use_rot: False
+      #Here we do not use validation phase but use image logger to show few generated images.
+
+lightning:
+  modelcheckpoint:
+    params:
+      every_n_train_steps: 20000
+  callbacks:
+    image_logger:
+      target: main.ImageLogger
+      params:
+        batch_frequency: 20000
+        max_images: 1
+        increase_log_steps: False  
+
+  trainer:
+    benchmark: True
+    max_steps: 800000
+    accumulate_grad_batches: 1
+    gpus: '0'

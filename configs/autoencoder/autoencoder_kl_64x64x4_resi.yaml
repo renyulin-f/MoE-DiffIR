@@ -4,10 +4,7 @@ model:
   target: ldm.models.autoencoder.AutoencoderKLResi2
   params:
     # for training only
-    ckpt_path: /data1/renyulin/MoE-DiffIR/epoch=000011.ckpt
-    # ckpt_path: /data2/renyulin/Prompt_Diffusion/moe_checkpoints/vae_docoder_large/epoch=000001-v1.ckpt
-    # ckpt_path: /data1/renyulin/Prompt_Diffusion/logs/2024-02-15-17-40-34_VAE_finetuned_large_prompt/checkpoints/epoch=000028.ckpt
-    # ckpt_path: /data2/renyulin/Prompt_Diffusion/moe_checkpoints/visual_large_21/epoch=000011.ckpt
+    ckpt_path: Decoder_Finetuned.ckpt
     monitor: "val/rec_loss"
     embed_dim: 4
     fusion_w: 1.0
