@@ -17,18 +17,14 @@ import time
 from pytorch_lightning import seed_everything
 import sys
 import torchvision.transforms as transforms
-sys.path.append('/data2/renyulin/Prompt_Diffusion')
+sys.path.append('Prompt_Diffusion')
 from ldm.util import instantiate_from_config
 from ldm.models.diffusion.ddim import DDIMSampler
 from ldm.models.diffusion.plms import PLMSSampler
 import math
 import copy
-os.environ["CUDA_VISIBLE_DEVICES"] = "2"
-os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
-
 
 def resize(image):
-    # Resize = transforms.Resize(size=(512, 512))
     Resize= transforms.Compose([
         transforms.Resize(224),
         transforms.CenterCrop(224)
@@ -37,7 +33,6 @@ def resize(image):
     return resized_image
 
 def resize_64(image):
-    # Resize = transforms.Resize(size=(512, 512))
     Resize= transforms.Compose([
         transforms.Resize(64),
         transforms.CenterCrop(64)
@@ -160,7 +155,10 @@ def main():
     parser.add_argument(
         "--input_dir",
         type=str,
-        default='/data1/renyulin/Prompt_Diffusion/LIVE1/',
+        default='Test_Compressed_Dataset/LIVE1/',
+        # default = 'Test_Compressed_Dataset/BSDS/',
+        # default = 'Test_Compressed_Dataset/ICB/',
+        # default = 'Test_Compressed_Dataset/DIV2K_test/',
         help="number of ddpm sampling steps",
     )
     parser.add_argument(
@@ -184,13 +182,13 @@ def main():
     parser.add_argument(
         "--config",
         type=str,
-        default="/data1/renyulin/MoE-DiffIR/configs/MoE-DiffIR/MoE-DiffIR_Only_MoE_Prompt.yaml",
+        default="configs/MoE-DiffIR/MoE-DiffIR_Only_MoE_Prompt.yaml",
         help="path to config which constructs model",
     )
     parser.add_argument(
         "--ckpt",
         type=str,
-          default='N7_K3.ckpt',
+          default='MoE-Prompt.ckpt',
         help="path to checkpoint of model",
     )
     parser.add_argument(

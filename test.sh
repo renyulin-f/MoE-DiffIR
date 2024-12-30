@@ -1,1 +1,1 @@
-CUDA_VISIBLE_DEVICES=0 python test.py --config configs/MoE-DiffIR/MoE-DiffIR_Only_MoE_Prompt.yaml --ckpt Only-MoE-Prompt.ckpt --klvae_ckpt Decoder_Finetuned.ckpt --input_dir '/data1/renyulin/Prompt_Diffusion/LIVE1/' --output_dir 'Output/LIVE1_test/'
+CUDA_VISIBLE_DEVICES=0 python test.py --config configs/MoE-DiffIR/MoE-DiffIR_Only_MoE_Prompt.yaml --ckpt Only-MoE-Prompt.ckpt --klvae_ckpt Decoder_Finetuned.ckpt --input_dir 'Test_Compressed_Dataset/LIVE1' --output_dir 'Output/LIVE1_test/'

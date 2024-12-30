@@ -102,7 +102,7 @@ model:
 data:
   target: main.DataModuleFromConfig
   params:
-    batch_size: 2
+    batch_size: 4
     num_workers: 8
     train:
       target: basicsr.data.CIR_dataset.CompressionTrainDataset
@@ -131,27 +131,6 @@ data:
         HIFI_1: 'Your_Path/HIFIC_1/'
         HIFI_2: 'Your_Path/HIFIC_2/'
         HIFI_3: 'Your_Path/HIFIC_3/'
-        # JPEG_10: '/data1/renyulin/Compression/'
-        # JPEG_15: '/data1/renyulin/Compression/'
-        # JPEG_20: '/data1/renyulin/Compression/'
-        # VVC_47: '/data1/renyulin/Compression/'
-        # VVC_42: '/data1/renyulin/Compression/'
-        # VVC_37: '/data1/renyulin/Compression/'
-        # HEVC_47: '/data1/renyulin/Compression/'
-        # HEVC_42: '/data1/renyulin/Compression/'
-        # HEVC_37: '/data1/renyulin/Compression/'
-        # WEBP_1: '/data1/renyulin/Compression/'
-        # WEBP_5: '/data1/renyulin/Compression/'
-        # WEBP_10: '/data1/renyulin/Compression/'
-        # PSNR_1: '/data1/renyulin/Compression/'
-        # PSNR_2: '/data1/renyulin/Compression/'
-        # PSNR_3: '/data1/renyulin/Compression/'
-        # SSIM_1: '/data1/renyulin/Compression/'
-        # SSIM_2: '/data1/renyulin/Compression/'
-        # SSIM_3: '/data1/renyulin/Compression/'
-        # HIFI_1: '/data1/renyulin/Compression/'
-        # HIFI_2: '/data1/renyulin/Compression/'
-        # HIFI_3: '/data1/renyulin/Compression/'
 
         # num_face: 10000
         crop_size: 256 # Default 256, could change to 512 according to your GPU memory.
@@ -179,4 +158,4 @@ lightning:
     benchmark: True
     max_steps: 800000
     accumulate_grad_batches: 1
-    gpus: '0'
+    gpus: '0,1,2,3,4,5,6,7'
