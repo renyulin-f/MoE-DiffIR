@@ -16,7 +16,6 @@ from pytorch_lightning.utilities.distributed import rank_zero_only
 from pytorch_lightning.utilities import rank_zero_info
 from ldm.data.base import Txt2ImgIterableBaseDataset
 from ldm.util import instantiate_from_config, instantiate_from_config_sr
-os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
 def get_parser(**parser_kwargs):
     def str2bool(v):
@@ -55,7 +54,7 @@ def get_parser(**parser_kwargs):
         metavar="base_config.yaml",
         help="paths to base configs. Loaded from left-to-right. "
              "Parameters can be overwritten or added with command-line options of the form `--key value`.",
-        default=['MoE-DiffIR.yaml'],
+        default=['configs/MoE-DiffIR/MoE-DiffIR_Only_MoE_Prompt.yaml'],
     )
     parser.add_argument(
         "-t",
