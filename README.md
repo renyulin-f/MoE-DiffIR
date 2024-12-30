@@ -42,12 +42,22 @@ pip install -r requirements.txt
 
 ### Inference code:
 Here we release three checkpoints: (i) Only using MoE-Prompt (ii) Use Both MoE-Prompt and V2T Adapter (iii) Use MoE-Prompt, V2T Adapter and DA-CLIP degradation Prior. 
-You can find three weights in this link.
+You can find three weights in this [link](https://drive.google.com/drive/folders/1G6Hn9djg7_1-Qijgj619fMd262uXCrNu?usp=sharing).
+
 Inference code: 
 ```
 bash test.sh
 ```
+
 Here you could download the klvae_ckpt from this [link](https://drive.google.com/drive/folders/1G6Hn9djg7_1-Qijgj619fMd262uXCrNu?usp=sharing).
+
+### Training code:
+
+Training code: 
+```
+bash train.sh
+```
+
 ## Results
 <p align="center">
   <img width="800" src="./Figs/Visual1.png">
