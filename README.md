@@ -42,7 +42,7 @@ pip install -r requirements.txt
 
 ### Inference code:
 Here we release three checkpoints: (i) Only using MoE-Prompt (ii) Use Both MoE-Prompt and V2T Adapter (iii) Use MoE-Prompt, V2T Adapter and DA-CLIP degradation Prior. 
-You can find three weights in this [link](https://drive.google.com/drive/folders/1G6Hn9djg7_1-Qijgj619fMd262uXCrNu?usp=sharing).
+You can find three weights in this [link](https://rec.ustc.edu.cn/share/84315560-c692-11ef-81e4-a301640e2c6f). (Password: 283i)
 
 Inference code: 
 ```
