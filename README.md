@@ -70,11 +70,13 @@ bash train.sh
 Please cite us if this work is helpful to you.
 
 ```
-@article{ren2024moe,
-  title={MoE-DiffIR: Task-customized Diffusion Priors for Universal Compressed Image Restoration},
+@inproceedings{ren2025moe,
+  title={Moe-diffir: Task-customized diffusion priors for universal compressed image restoration},
   author={Ren, Yulin and Li, Xin and Li, Bingchen and Wang, Xingrui and Guo, Mengxi and Zhao, Shijie and Zhang, Li and Chen, Zhibo},
-  journal={arXiv preprint arXiv:2407.10833},
-  year={2024}
+  booktitle={European Conference on Computer Vision},
+  pages={116--134},
+  year={2025},
+  organization={Springer}
 }
 ```
 
