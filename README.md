@@ -32,6 +32,8 @@ We propose a comprehensive benchmark dataset for universal compressed image rest
 
 Our CIR dataset is based on DF2K, with the original DF2K images considered as the ground truth. All compression codecs are applied to these images. Here we release the [datalink](https://drive.google.com/drive/folders/1Kn8SjJWpHITHlg5kuL1Ur7Ml-WNJJ064) of CIR dataset including 'CIR_datasets' and 'CIR_Unseen_Tasks'. The 'CIR_Dataset' branch of this dataset is shown in the following figure. The dataset comprises training and testing sets. In the training set, "DF2K_HR" contains the ground truth (GT) images, while the other folders correspond to 21 types of low-quality (LQ) images resulting from various compression distortions. The five testing sets also include folders corresponding to the 21 types of compressed LQ images, as well as folders for the high-resolution (HR) images.
 
+Here we also release a small test_set including 'LIVE1' and 'DIV2K_Test'. [link](https://rec.ustc.edu.cn/share/3b079e10-fa65-11ef-991a-6512ec9141fb) (password:cqq3)
+
 ### Prepare Environment:
 - Python 3.9
 - PyTorch 1.12.1 + cu113
