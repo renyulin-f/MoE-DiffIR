@@ -62,7 +62,7 @@ bash train.sh
 ```
 
 ### Visual Results:
-The link of our Moe-DiffIR Visual Reuslt:[link](https://rec.ustc.edu.cn/share/6a05f850-0644-11f0-bea8-1319946c8ca0)_
+The link of our Moe-DiffIR Visual Reuslt:[link](https://rec.ustc.edu.cn/share/6a05f850-0644-11f0-bea8-1319946c8ca0)
 
 ## Results
 <p align="center">
